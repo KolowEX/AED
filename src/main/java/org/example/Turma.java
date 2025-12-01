@@ -9,6 +9,7 @@ public class Turma {
     private String codigoTurma;
     private String codigoDisciplina;
     private String semestre;
+    private boolean encerrada = false;
     private int creditos;
     private String horario1;
     private String horario2;
@@ -48,6 +49,14 @@ public class Turma {
         System.out.printf("Aluno %s foi matriculado em %s", aluno.getNome(), NomeDisciplina);
     }
 
+    public void setPlanoDeEnsino(String descricao) {
+        this.planoDeEnsino = new PlanoDeEnsino(this.responsavel, descricao);
+    }
+
+    public void removerAlunoDaLista(int matricula) {
+        this.alunos.removeIf(a -> a.getMatricula() == matricula);
+    }
+
     public void setFalta(Aluno aluno) {
         if (alunos.contains(aluno)) {
             DisciplinaCursada ficha = aluno.buscarDisciplina(this.codigoDisciplina);
@@ -55,6 +64,26 @@ public class Turma {
                 ficha.adicionarFalta();
             }
         }
+    }
+
+    public void encerrarSemestre() {
+        if (encerrada) {
+            System.out.println("Esta turma já foi encerrada anteriormente.");
+            return;
+        }
+
+        System.out.println("--- Encerrando Turma " + this.codigoTurma + " ---");
+
+        for (Aluno aluno : alunos) {
+            aluno.consolidarTurma(this.codigoTurma);
+        }
+
+        this.encerrada = true; // Bloqueia edições futuras
+        System.out.println("Turma encerrada com sucesso. Notas lançadas no sistema.");
+    }
+
+    public boolean isEncerrada() {
+        return encerrada;
     }
 
     public void setNota(Aluno aluno, double nota, String tipoNota) {
@@ -75,6 +104,8 @@ public class Turma {
             System.out.println("Aluno não pertence a esta turma.");
         }
     }
+
+
 
     public Professor getResponsavel() {
         return responsavel;

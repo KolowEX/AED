@@ -53,6 +53,7 @@ public class MenuAluno {
             System.out.println("4 - Matricular em Disciplina");
             System.out.println("5 - Consultar Meus Horários");
             System.out.println("6 - Buscar Disciplina (por código)");
+            System.out.println("7 - Mudar de senha");
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
 
@@ -64,13 +65,20 @@ public class MenuAluno {
             }
 
             switch (opc) {
-
                 case 1:
-                    aluno.consultarBoleto();
+                    try {
+                        aluno.consultarBoleto();
+                    } catch(NullPointerException e) {
+                        System.out.printf("\nNão a pendências de boleto!\n");
+                    }
                     break;
 
                 case 2:
-                    aluno.consultarSemestre();
+                    try {
+                        aluno.consultarSemestre();
+                    } catch(NullPointerException e) {
+                        System.out.printf("\nO aluno não está cadastro em nenhuma matéria esse semestre");
+                    }
                     break;
 
                 case 3:
@@ -78,7 +86,6 @@ public class MenuAluno {
                     break;
 
                 case 4:
-                    matricularDisciplina(aluno);
                     break;
 
                 case 5:
@@ -87,6 +94,10 @@ public class MenuAluno {
 
                 case 6:
                     buscarDisciplina(aluno);
+                    break;
+
+                case 7:
+                    mudarSenha(aluno);
                     break;
 
                 case 0:
@@ -100,8 +111,11 @@ public class MenuAluno {
         } while (opc != 0);
     }
 
-    private void matricularDisciplina(Aluno aluno) {
-        System.out.println("Implementar");
+    private void mudarSenha(Aluno aluno) {
+        System.out.printf("Por favor, escolha a nova senha: ");
+        String senha = sc.nextLine();
+        aluno.definirNovaSenha(senha);
+        System.out.printf("\nSenha alterada com sucesso!");
     }
 
     private void buscarDisciplina(Aluno aluno) {

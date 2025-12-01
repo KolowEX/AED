@@ -1,11 +1,13 @@
 package org.example.Sistema;
 
 import org.example.Admin;
+import org.example.Aluno;
 import org.example.Display.MenuAdmin;
 import org.example.Display.MenuAluno;
 import org.example.Display.MenuPrincipal;
 import org.example.Display.MenuProfessor;
 import org.example.Pessoa;
+import org.example.Professor;
 
 public class SistemaEscola {
 
@@ -27,9 +29,25 @@ public class SistemaEscola {
                 'M',
                 1
         );
-        adm.definirNovaSenha("admin");
 
+        Professor professor = new Professor(
+                "Ricarda",
+                100, 19,
+                true,
+                'F',
+                2
+        );
+
+        Aluno aluno = new Aluno(
+                "Igor", 200, 19, true, 'M', 10
+        );
+
+        adm.definirNovaSenha("admin");
         cadastro.addAdmin(adm);
+        cadastro.addProfessor(professor);
+        cadastro.addAluno(aluno);
+        aluno.definirNovaSenha("1");
+        professor.definirNovaSenha("123");
 
         // Instanciar menus
         this.menuAluno = new MenuAluno(this);

@@ -48,6 +48,9 @@ public class MenuProfessor {
             System.out.println("1 - Listar turmas que leciona");
             System.out.println("2 - Lançar nota para aluno");
             System.out.println("3 - Lançar falta para aluno");
+            System.out.println("4 - Montar plano de ensino");
+            System.out.println("5 - Finalizar semestre de uma turma");
+            System.out.println("6 - Trocar a senha");
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
 
@@ -62,10 +65,38 @@ public class MenuProfessor {
                 case 1 -> listarTurmas(p);
                 case 2 -> lancarNota(p);
                 case 3 -> lancarFalta(p);
+                case 4 -> LancarPlano(p);
+                case 5 -> finalizarTurma(p);
+                case 6 -> mudarSenha(p);
                 case 0 -> System.out.println("Saindo...");
                 default -> System.out.println("❌ Opção inválida!");
             }
         }
+    }
+
+    private void LancarPlano(Professor prof) {
+        System.out.printf("\n=== Lancar Planos ===");
+        boolean encontrou = false;
+
+        System.out.printf("Por favor, digite o codigo da turma");
+        String tempo = sc.nextLine();
+
+        Turma turma = cadastro.buscarTurma(tempo);
+
+        if (turma == null) {
+            System.out.printf("❌ Turma não encontrada!");
+            return;
+        }
+
+        if(!turma.getResponsavel().equals(prof)) {
+            System.out.printf("❌ Você não leciona essa turma!");
+            return;
+        }
+
+        System.out.printf("Por favor, digite o plano de ensino");
+        String sucumba = sc.nextLine();
+        turma.setPlanoDeEnsino(sucumba);
+        System.out.printf("✔ Plano lançado com sucesso!");
     }
 
     private void listarTurmas(Professor prof) {
@@ -82,6 +113,14 @@ public class MenuProfessor {
         if (!encontrou) {
             System.out.println("Nenhuma turma encontrada.");
         }
+    }
+
+    private void mudarSenha(Professor prof) {
+        System.out.printf("Por favor, escolha a nova senha: ");
+        String senha = sc.nextLine();
+        prof.definirNovaSenha(senha);
+        System.out.printf("\nSenha alterada com sucesso!\n");
+
     }
 
     private void lancarNota(Professor prof) {
@@ -150,5 +189,41 @@ public class MenuProfessor {
 
         prof.lancarFalta(turma, aluno);
         System.out.println("✔ Falta lançada com sucesso!");
+    }
+
+    private void finalizarTurma(Professor prof) {
+        System.out.println("\n--- Finalizar Semestre da Turma ---");
+        listarTurmas(prof);
+
+        System.out.print("Digite o código da turma para encerrar: ");
+        String codigo = sc.nextLine();
+
+        Turma turmaAlvo = sistema.getCadastro().buscarTurma(codigo);
+
+        if (turmaAlvo == null) {
+            System.out.println("Turma não encontrada.");
+            return;
+        }
+
+        if (turmaAlvo.getResponsavel().getMatricula() != prof.getMatricula()) {
+            System.out.println("❌ Você não é o responsável por esta turma!");
+            return;
+        }
+
+        if (turmaAlvo.isEncerrada()) {
+            System.out.println("Esta turma já foi finalizada.");
+            return;
+        }
+
+        System.out.println("⚠️ ATENÇÃO: Isso calculará a média final de TODOS os alunos e arquivará a disciplina.");
+        System.out.print("Confirma o encerramento? (S/N): ");
+        String resp = sc.nextLine();
+
+        if (resp.equalsIgnoreCase("S")) {
+            turmaAlvo.encerrarSemestre();
+            System.out.println("✅ Semestre finalizado com sucesso!");
+        } else {
+            System.out.println("Operação cancelada.");
+        }
     }
 }

@@ -18,6 +18,10 @@ public class DisciplinaCursada {
     private String horario2;
     private PlanoDeEnsino resumo;
 
+    public String getNomeDisciplina() {
+        return nomeDisciplina;
+    }
+
     public DisciplinaCursada(String nomeDisciplina, String semestre, int creditos, String codigodisciplina, String turma, String horario, String horario2, PlanoDeEnsino resumo) {
         this.nomeDisciplina = nomeDisciplina;
         this.semestre = semestre;
@@ -38,6 +42,10 @@ public class DisciplinaCursada {
             return;
         }
         N1 = valor;
+    }
+
+    public String getTurma() {
+        return turma;
     }
 
     public void adicionarN2(double valor) {

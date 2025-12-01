@@ -4,8 +4,17 @@ import org.example.*;
 import org.example.Sistema.SistemaEscola;
 
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class MenuAdmin {
+
+    // Instanciação de bolsas PREDEFINIDAS :D
+    Bolsa cotaracial = new Bolsa("Cota Racial", 50);
+    Bolsa pobres = new Bolsa("Cota Social", 100);
+    Bolsa ENEM = new Bolsa("Cota Enem", 30);
 
     private SistemaEscola sistema;
     private Scanner sc = new Scanner(System.in);
@@ -53,10 +62,15 @@ public class MenuAdmin {
             System.out.println("6 - Listar Turmas");
             System.out.println("7 - Matricular Aluno em Turma");
             System.out.println("8 - Listar Alunos por Turma");
+            System.out.println("9 - Dar bolsa Aluno");
+            System.out.println("10 - Gerar boleto a aluno");
+            System.out.println("11 - Excluir Aluno");
+            System.out.println("12 - Excluir Professor");
+            System.out.println("13 - Excluir Turma");
+            System.out.println("14 - Remover bolsa Aluno");
             System.out.println("0 - Sair");
             System.out.print("Escolha: ");
 
-            // ler opção com tratamento
             try {
                 opc = Integer.parseInt(sc.nextLine());
             } catch (NumberFormatException e) {
@@ -89,6 +103,24 @@ public class MenuAdmin {
                 case 8:
                     listarAlunosPorTurma();
                     break;
+                case 9:
+                    darBolsa();
+                    break;
+                case 10:
+                    gerarFatura();
+                    break;
+                case 11:
+                    removerAluno();
+                    break;
+                case 12:
+                    removerProfessor();
+                    break;
+                case 13:
+                    removerTurma();
+                    break;
+                case 14:
+                    removerBolsa();
+                    break;
                 case 0:
                     System.out.println("Saindo...");
                     break;
@@ -97,6 +129,196 @@ public class MenuAdmin {
             }
 
         } while (opc != 0);
+    }
+
+    private void removerAluno() {
+        System.out.println("\n--- Remover aluno do sistema❗❗❗ [CUIDADO] ---\n");
+
+        System.out.print("Digite a matrícula do Aluno: ");
+        int matricula = 0;
+        try {
+            matricula = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Matrícula inválida.");
+            return;
+        }
+
+        Aluno aluno = sistema.getCadastro().buscarAluno(matricula);
+
+        if (aluno == null) {
+            System.out.println("❌ Aluno não encontrado!");
+            return;
+        }
+
+        System.out.print("Tem certeza que deseja excluir o aluno " + matricula + "? (S/N): ");
+        String confirmacao = sc.nextLine();
+
+        if (!confirmacao.equalsIgnoreCase("S")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        boolean sucesso = sistema.getCadastro().removerAluno(matricula);
+
+        if (sucesso) {
+            System.out.println("✅ Aluno removido do sistema e de todas as turmas.");
+        } else {
+            System.out.println("⚠️ Aluno não encontrado com essa matrícula.");
+        }
+
+    }
+
+    private void removerProfessor() {
+        System.out.println("\n--- Excluir Professor ---");
+        System.out.print("Matrícula do Professor: ");
+        int matricula;
+        try {
+            matricula = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Matrícula inválida.");
+            return;
+        }
+
+        boolean sucesso = sistema.getCadastro().removerProfessor(matricula);
+
+        if (sucesso) {
+            System.out.println("✅ Professor removido com sucesso!");
+        } else {
+            System.out.println("❌ ERRO: Não foi possível remover.");
+            System.out.println("Motivo provável: O professor está vinculado a uma turma ativa ou a matrícula não existe.");
+            System.out.println("Dica: Remova as turmas deste professor primeiro ou substitua-o.");
+        }
+    }
+
+    private void removerTurma() {
+        System.out.println("\n--- Excluir Turma ---");
+        System.out.print("Código da Turma (ex: CCO10-T01): ");
+        String codigo = sc.nextLine();
+
+        System.out.println("⚠️ ATENÇÃO: Isso removerá a turma e apagará a matéria do histórico dos alunos matriculados.");
+        System.out.print("Tem certeza? (S/N): ");
+        String confirmacao = sc.nextLine();
+
+        if (!confirmacao.equalsIgnoreCase("S")) {
+            System.out.println("Operação cancelada.");
+            return;
+        }
+
+        boolean sucesso = sistema.getCadastro().removerTurma(codigo);
+
+        if (sucesso) {
+            System.out.println("✅ Turma excluída e dados dos alunos atualizados.");
+        } else {
+            System.out.println("❌ Turma não encontrada.");
+        }
+    }
+
+    private void gerarFatura() {
+        System.out.println("\n--- Gerar boleto ---\n");
+
+        System.out.print("Digite a matrícula do Aluno: ");
+        int matricula = 0;
+        try {
+            matricula = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Matrícula inválida.");
+            return;
+        }
+
+        Aluno aluno = sistema.getCadastro().buscarAluno(matricula);
+
+        if (aluno == null) {
+            System.out.println("❌ Aluno não encontrado!");
+            return;
+        }
+
+        System.out.println("Aluno selecionado: " + aluno.getNome());
+        int valor = aluno.getCreditos();
+
+        if (aluno.getCurso() == Curso.SI) {
+            valor *= 80;
+        } else if (aluno.getCurso() == Curso.CC) {
+            valor *= 100;
+        } else {
+            valor *= 120;
+        }
+
+        LocalDate data = LocalDate.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String d1 = data.format(formato);
+        String d2 = data.plusDays(3).format(formato);
+        aluno.gerarBoleto(valor, d1, d2);
+
+
+    }
+
+    private void darBolsa() {
+        System.out.println("\n--- Conceder Bolsa de Estudos ---");
+
+        System.out.print("Digite a matrícula do Aluno: ");
+        int matricula = 0;
+        try {
+            matricula = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Matrícula inválida.");
+            return;
+        }
+
+        Aluno aluno = sistema.getCadastro().buscarAluno(matricula);
+
+        if (aluno == null) {
+            System.out.println("❌ Aluno não encontrado!");
+            return;
+        }
+
+        System.out.println("Aluno selecionado: " + aluno.getNome());
+
+        System.out.println("Escolha a bolsa:");
+        System.out.println("1 - Cota Racial (50%)");
+        System.out.println("2 - Cota Social (100%)");
+        System.out.println("3 - Cota ENEM (30%)");
+        System.out.print("Opção: ");
+
+        int opc = Integer.parseInt(sc.nextLine());
+        Bolsa bolsaEscolhida = null;
+
+        switch (opc) {
+            case 1:
+                bolsaEscolhida = cotaracial;
+                break;
+            case 2:
+                bolsaEscolhida = pobres;
+                break;
+            case 3:
+                bolsaEscolhida = ENEM;
+                break;
+            default: System.out.println("Opção inválida."); return;
+        }
+
+        aluno.setBolsas(bolsaEscolhida);
+    }
+
+    private void removerBolsa() {
+            System.out.println("\n--- Remover bolsa de Estudos ---");
+
+            System.out.print("Digite a matrícula do Aluno: ");
+            int matricula = 0;
+            try {
+                matricula = Integer.parseInt(sc.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Matrícula inválida.");
+                return;
+            }
+
+            Aluno aluno = sistema.getCadastro().buscarAluno(matricula);
+
+            if (aluno == null) {
+                System.out.println("❌ Aluno não encontrado!");
+                return;
+            }
+
+            System.out.println("Aluno selecionado: " + aluno.getNome());
+            aluno.tirarBolsa();
     }
 
     private void cadastrarAluno(Admin admin) {

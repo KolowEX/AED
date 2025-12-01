@@ -50,10 +50,54 @@ public class Aluno extends Pessoa{
         return null;
     }
 
+    public void consolidarTurma(String codigoTurma) {
+        DisciplinaCursada disciplinaAlvo = null;
+
+        for (DisciplinaCursada d : HistoricoAtual) {
+            if (d.getTurma().equalsIgnoreCase(codigoTurma)) {
+                disciplinaAlvo = d;
+                break;
+            }
+        }
+
+        if (disciplinaAlvo != null) {
+            disciplinaAlvo.finalizarDisciplina();
+
+            HistoricoEscolar.add(disciplinaAlvo);
+            HistoricoAtual.remove(disciplinaAlvo);
+
+        }
+    }
+
+    public void setBolsas(Bolsa bolsas) {
+        this.bolsas = bolsas;
+    }
+
     public void consultarHorarios() { // Meus horarios
         for (DisciplinaCursada b: HistoricoAtual) {
             b.meuHorario();
         }
+    }
+
+    public void removerDisciplinaDoHistorico(String codigoTurma) {
+        HistoricoAtual.removeIf(d -> d.getTurma().equals(codigoTurma));
+    }
+
+    public int getCreditos() {
+        return creditos;
+    }
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void gerarBoleto(double N, String data1, String data2) {
+        Boleto boleto = new Boleto(N, data1, data2, this);
+        this.fatura.add(boleto);
+    }
+
+    public void tirarBolsa() {
+        this.bolsas = null;
     }
 
     public Aluno(String nome, long CPF, int idade, boolean criveis, char sexo, int matricula) {

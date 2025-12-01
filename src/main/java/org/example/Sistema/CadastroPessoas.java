@@ -118,4 +118,40 @@ public class CadastroPessoas {
             System.out.println("- " + a.getNome() + " | Matricula: " + a.getMatricula());
         }
     }
+
+    // ---------------------
+    // REMOÇÕES COMPLETAS
+    // ---------------------
+
+    public boolean removerAluno(int matricula) {
+        for (Turma t : turmas) {
+            t.removerAlunoDaLista(matricula);
+        }
+
+        return alunos.removeIf(a -> a.getMatricula() == matricula);
+    }
+
+    public boolean removerProfessor(int matricula) {
+        for (Turma t : turmas) {
+            if (t.getResponsavel().getMatricula() == matricula) {
+                return false;
+            }
+        }
+
+        return professores.removeIf(p -> p.getMatricula() == matricula);
+    }
+
+    public boolean removerTurma(String codigoTurma) {
+        Turma turmaAlvo = buscarTurma(codigoTurma);
+
+        if (turmaAlvo == null) {
+            return false; // Turma não existe
+        }
+
+        for (Aluno aluno : turmaAlvo.getAlunos()) {
+            aluno.removerDisciplinaDoHistorico(codigoTurma);
+        }
+
+        return turmas.remove(turmaAlvo);
+    }
 }

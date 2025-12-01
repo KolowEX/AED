@@ -12,7 +12,11 @@ public class Boleto implements IImprimivel {
         this.datavencimento = datavencimento;
         this.pertecente = pertecente;
         situacao = false;
-        fatura = fatura - ((fatura * pertecente.getBolsas().getDesconto())/100);
+        if (pertecente.getBolsas() != null ) {
+            this.fatura = fatura - ((fatura * pertecente.getBolsas().getDesconto())/100);
+            return;
+        }
+        this.fatura = fatura;
     }
 
     @Override

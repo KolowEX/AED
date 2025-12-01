@@ -26,6 +26,10 @@ public class Admin extends Pessoa {
         return new Turma(prof, nomeDisc, codigoTurma, semestre, creditos, hor1, hor2, plano, codigoDisciplina);
     }
 
+    public void darBolsa(Aluno aluno, Bolsa bolsa) {
+        aluno.setBolsas(bolsa);
+    }
+
     public void matricularAlunoEmTurma(Aluno aluno, Turma turma) {
         turma.adicionarAluno(aluno);
     }
