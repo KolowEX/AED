@@ -63,7 +63,6 @@ public class Aluno extends Pessoa{
 
         if (disciplinaAlvo != null) {
             disciplinaAlvo.finalizarDisciplina();
-
             HistoricoEscolar.add(disciplinaAlvo);
             HistoricoAtual.remove(disciplinaAlvo);
 

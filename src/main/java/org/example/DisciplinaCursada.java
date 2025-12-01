@@ -76,6 +76,7 @@ public class DisciplinaCursada {
         } else {
             status = "Reprovado";
         }
+        System.out.printf("Nota final: %.2f\n", notafinal);
         return this;
     }
 

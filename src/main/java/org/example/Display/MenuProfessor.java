@@ -80,27 +80,33 @@ public class MenuProfessor {
 
     private void LancarPlano(Professor prof) {
         System.out.printf("\n=== Lancar Planos ===");
-        boolean encontrou = false;
+        try {
 
-        System.out.printf("Por favor, digite o codigo da turma");
-        String tempo = sc.nextLine();
 
-        Turma turma = cadastro.buscarTurma(tempo);
+            boolean encontrou = false;
 
-        if (turma == null) {
-            System.out.printf("❌ Turma não encontrada!");
-            return;
+            System.out.printf("\nPor favor, digite o codigo da turma: ");
+            String tempo = sc.nextLine();
+
+            Turma turma = cadastro.buscarTurma(tempo);
+
+            if (turma == null) {
+                System.out.printf("❌ Turma não encontrada!");
+                return;
+            }
+
+            if (!turma.getResponsavel().equals(prof)) {
+                System.out.printf("❌ Você não leciona essa turma!");
+                return;
+            }
+
+            System.out.printf("\nPor favor, digite o plano de ensino: ");
+            String sucumba = sc.nextLine();
+            turma.setPlanoDeEnsino(sucumba);
+            System.out.printf("✔ Plano lançado com sucesso!");
+        } catch (Exception e) {
+            System.out.printf("❌ Erro o plano. Verifique se os dados estão corretos\n");
         }
-
-        if(!turma.getResponsavel().equals(prof)) {
-            System.out.printf("❌ Você não leciona essa turma!");
-            return;
-        }
-
-        System.out.printf("Por favor, digite o plano de ensino");
-        String sucumba = sc.nextLine();
-        turma.setPlanoDeEnsino(sucumba);
-        System.out.printf("✔ Plano lançado com sucesso!");
     }
 
     private void listarTurmas(Professor prof) {
@@ -129,39 +135,48 @@ public class MenuProfessor {
 
     private void lancarNota(Professor prof) {
         System.out.println("\n=== Lançar Nota ===");
+        try {
 
-        System.out.print("Código da Turma: ");
-        String codTurma = sc.nextLine();
 
-        Turma turma = cadastro.buscarTurma(codTurma);
+            System.out.print("Código da Turma: ");
+            String codTurma = sc.nextLine();
 
-        if (turma == null) {
-            System.out.println("❌ Turma não encontrada!");
-            return;
+            Turma turma = cadastro.buscarTurma(codTurma);
+
+            if (turma == null) {
+                System.out.println("❌ Turma não encontrada!");
+                return;
+            }
+
+            if (!turma.getResponsavel().equals(prof)) {
+                System.out.println("❌ Você não leciona esta turma!");
+                return;
+            }
+
+            System.out.print("Matrícula do aluno: ");
+            int mat = Integer.parseInt(sc.nextLine());
+            Pessoa p = cadastro.buscarPorMatricula(mat);
+
+            if (!(p instanceof Aluno aluno)) {
+                System.out.println("❌ Aluno não encontrado!");
+                return;
+            }
+
+            System.out.print("Tipo da nota (N1/N2/AI): ");
+            String tipo = sc.nextLine();
+            if (!tipo.equals("N1") && !tipo.equals("N2") && !tipo.equals("AI")) {
+                System.out.printf("❌ Erro ao lançar as notas. Verifique se os dados estão corretos\n");
+                return;
+            }
+
+            System.out.print("Nota: ");
+            double nota = Double.parseDouble(sc.nextLine());
+
+            prof.lancarNota(turma, aluno, nota, tipo);
+            System.out.println("✔ Nota lançada com sucesso!");
+        } catch(Exception e) {
+            System.out.printf("❌ Erro ao lançar as notas. Verifique se os dados estão corretos\n");
         }
-
-        if (!turma.getResponsavel().equals(prof)) {
-            System.out.println("❌ Você não leciona esta turma!");
-            return;
-        }
-
-        System.out.print("Matrícula do aluno: ");
-        int mat = Integer.parseInt(sc.nextLine());
-        Pessoa p = cadastro.buscarPorMatricula(mat);
-
-        if (!(p instanceof Aluno aluno)) {
-            System.out.println("❌ Aluno não encontrado!");
-            return;
-        }
-
-        System.out.print("Tipo da nota (AV1/AV2/FINAL): ");
-        String tipo = sc.nextLine();
-
-        System.out.print("Nota: ");
-        double nota = Double.parseDouble(sc.nextLine());
-
-        prof.lancarNota(turma, aluno, nota, tipo);
-        System.out.println("✔ Nota lançada com sucesso!");
     }
 
     private void lancarFalta(Professor prof) {
